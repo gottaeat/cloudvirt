@@ -1,0 +1,12 @@
+---
+userspec:
+    - name: john
+      # "123"
+      password_hash: '$y$j9T$/gPg8H0fdtuZh8Ja8decf.$f7IzP89gNaToHUsY2bdgaxv2HJsKSRYLyG6mxNZ6AW3'
+      sudo_god_mode: true
+
+    - name: doe
+      # "123"
+      password_hash: $y$j9T$PFMBXSVK4PVM8Pc97frkP0$ggrFjtfyVOzrkqzGqCk/SzDi8v9JLiWCofyvfvpB1b3
+      ssh_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXMd92G14CUuvg+0C5tSN+PXvLQHYJ70afxWIDwGU0s 

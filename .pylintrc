@@ -1,0 +1,5 @@
+[MASTER]
+disable=
+    C0114,C0115,C0116, # docstring
+[FORMAT]
+good-names=ip,e

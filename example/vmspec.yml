@@ -1,0 +1,12 @@
+---
+vmspec:
+    dom_name: cloudvirttest
+    dom_mem: 2048
+    dom_vcpu: 2
+    net: cloudvirt
+#   ip:
+#   gateway:
+    vol_pool: cloudvirt
+    vol_size: 10
+#   base_image:
+#   sshpwauth:
