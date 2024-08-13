@@ -86,7 +86,7 @@ class CreateCloudInit(unittest.TestCase):
         vmspec.ip = "192.168.254.129"
         vmspec.sshpwauth = True
         vmspec.gateway = "192.168.254.1"
-        vmspec.bridge_subnet = "24"
+        vmspec.bridge_pfxlen = "24"
         vmspec.mac_addr = "0a:ba:d1:de:a0:ff"
 
         vmspec.users.append(testuser)
