@@ -9,7 +9,7 @@ import libvirt
 from cloudvirt.driver import APIDriverVMCreator
 from cloudvirt.driver import APIDriverVMNuker
 from cloudvirt.log import set_root_logger
-from cloudvirt.spec import VMSpec
+from cloudvirt.spec import VMSpec, UserSpec
 
 set_root_logger(debug=True)
 mock_logger = logging.getLogger("cloudvirt")
@@ -173,7 +173,6 @@ class NukeVM(unittest.TestCase):
         driver = MockDriver(None, mock_logger)
 
         vmspec = VMSpec()
-
         vmspec.dom_name = "test_nuke_dom"
         vmspec.dom_mem = 2
         vmspec.dom_vcpu = 2
@@ -184,6 +183,13 @@ class NukeVM(unittest.TestCase):
         vmspec.vol_name = f"{vmspec.dom_name}-vol.qcow2"
         vmspec.ip = "192.168.254.129"
 
+        testuser = UserSpec()
+        testuser.name = "mytestname"
+        testuser.password_hash = (
+            "$y$j9T$0i28VV.7n07tAyGUHDPzz0$7N1jxo6jUWHafKq1hMX9bvHMq4oIMiu.1v7yv.tB.GD"
+        )
+        vmspec.users.append(testuser)
+
         c = APIDriverVMNuker(driver, vmspec.dom_name, driver.logger)
         c.nuke()
 
@@ -192,6 +198,13 @@ class NukeVM(unittest.TestCase):
 
         vmspec = VMSpec()
         vmspec.dom_name = "nonexistant_dom"
+
+        testuser = UserSpec()
+        testuser.name = "mytestname"
+        testuser.password_hash = (
+            "$y$j9T$0i28VV.7n07tAyGUHDPzz0$7N1jxo6jUWHafKq1hMX9bvHMq4oIMiu.1v7yv.tB.GD"
+        )
+        vmspec.users.append(testuser)
 
         c = APIDriverVMNuker(driver, vmspec.dom_name, driver.logger)
 
@@ -212,7 +225,6 @@ class CreateVM(unittest.TestCase):
         driver = MockDriver(self.vol_dir.name, mock_logger)
 
         vmspec = VMSpec()
-
         vmspec.dom_name = "test_dom"
         vmspec.dom_mem = 2
         vmspec.dom_vcpu = 2
@@ -223,6 +235,13 @@ class CreateVM(unittest.TestCase):
         vmspec.vol_name = f"{vmspec.dom_name}-vol.qcow2"
         vmspec.ip = "192.168.254.129"
 
+        testuser = UserSpec()
+        testuser.name = "mytestname"
+        testuser.password_hash = (
+            "$y$j9T$0i28VV.7n07tAyGUHDPzz0$7N1jxo6jUWHafKq1hMX9bvHMq4oIMiu.1v7yv.tB.GD"
+        )
+        vmspec.users.append(testuser)
+
         c = APIDriverVMCreator(driver, vmspec, driver.logger)
         c.create()
 
@@ -230,7 +249,6 @@ class CreateVM(unittest.TestCase):
         driver = MockDriver(self.vol_dir.name, mock_logger)
 
         vmspec = VMSpec()
-
         vmspec.dom_name = "existing_dom"
         vmspec.dom_mem = 2
         vmspec.dom_vcpu = 2
@@ -240,6 +258,13 @@ class CreateVM(unittest.TestCase):
         vmspec.base_image = "test.img"
         vmspec.vol_name = f"{vmspec.dom_name}-vol.qcow2"
         vmspec.ip = "192.168.254.129"
+
+        testuser = UserSpec()
+        testuser.name = "mytestname"
+        testuser.password_hash = (
+            "$y$j9T$0i28VV.7n07tAyGUHDPzz0$7N1jxo6jUWHafKq1hMX9bvHMq4oIMiu.1v7yv.tB.GD"
+        )
+        vmspec.users.append(testuser)
 
         c = APIDriverVMCreator(driver, vmspec, driver.logger)
 
