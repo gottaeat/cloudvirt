@@ -52,8 +52,8 @@ class CreateCloudInit(unittest.TestCase):
         first_user = udata_parsed["users"][0]
 
         self.assertEqual(testuser.password_hash, first_user["passwd"])
-        self.assertEqual(first_user["groups"], "sudo")
-        self.assertEqual(first_user["sudo"], "ALL=(ALL) NOPASSWD:ALL")
+        self.assertEqual(first_user["groups"], ["sudo"])
+        self.assertEqual(first_user["sudo"], ["ALL=(ALL) NOPASSWD:ALL"])
 
         self.assertEqual(first_user["name"], "mytestname")
         self.assertEqual(first_user["shell"], "/bin/bash")
