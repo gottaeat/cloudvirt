@@ -1,4 +1,3 @@
-# pylint: disable=too-many-instance-attributes,too-few-public-methods
 class VMSpec:
     def __init__(self):
         # domain
@@ -29,7 +28,6 @@ class VMSpec:
         self.userdata = None
 
 
-# pylint: disable=too-few-public-methods
 class UserSpec:
     def __init__(self):
         self.name = None

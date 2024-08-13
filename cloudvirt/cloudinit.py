@@ -4,7 +4,6 @@ import pycdlib
 import yaml
 
 
-# pylint: disable=too-few-public-methods
 class CloudInit:
     def __init__(self, vmspec, parent_logger):
         self.vmspec = vmspec

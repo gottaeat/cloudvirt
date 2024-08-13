@@ -6,7 +6,6 @@ import yaml
 from .spec import VMSpec, UserSpec
 
 
-# pylint: disable=too-few-public-methods
 class ConfigYAML:
     def __init__(self, vmspec_file, userspec_file, userdata_file, parent_logger):
         self.vmspec_file = vmspec_file
@@ -16,7 +15,6 @@ class ConfigYAML:
 
         self.vmspec = None
 
-    # pylint: disable=too-many-branches,too-many-statements
     def _parse_vmspec(self):
         # - - load yaml - - #
         self.logger.info("loading VMSpec() yaml")
@@ -25,7 +23,6 @@ class ConfigYAML:
             try:
                 with open(self.vmspec_file, "r", encoding="utf-8") as yaml_file:
                     yaml_parsed = yaml.load(yaml_file.read(), Loader=yaml.Loader)
-            # pylint: disable=bare-except
             except:
                 self.logger.exception("%s parsing has failed", self.vmspec_file)
         else:
@@ -150,7 +147,6 @@ class ConfigYAML:
             try:
                 with open(self.userspec_file, "r", encoding="utf-8") as yaml_file:
                     yaml_parsed = yaml.load(yaml_file.read(), Loader=yaml.Loader)
-            # pylint: disable=bare-except
             except:
                 self.logger.exception("%s parsing has failed", self.userspec_file)
         else:
@@ -231,7 +227,6 @@ class ConfigYAML:
             try:
                 with open(self.userdata_file, "r", encoding="utf-8") as yaml_file:
                     yaml_parsed = yaml.load(yaml_file.read(), Loader=yaml.Loader)
-            # pylint: disable=bare-except
             except:
                 self.logger.exception("%s parsing has failed", self.userdata_file)
         else:

@@ -12,7 +12,6 @@ import libvirt
 from .cloudinit import CloudInit
 
 
-# pylint: disable=too-few-public-methods
 class APIDriverVMNuker:
     def __init__(self, driver, dom_name, parent_logger):
         self.driver = driver
@@ -133,7 +132,6 @@ class APIDriverVMCreator:
     def _genmac(self):
         self.logger.info("generating mac address")
 
-        # pylint: disable=invalid-name
         i, vmmac = 0, "52:54:"
         while i < 4:
             col = hex(random.randint(0, 255)).lstrip("0x")
@@ -153,7 +151,6 @@ class APIDriverVMCreator:
         else:
             self.logger.error(f"{self.vmspec.dom_name} already exists")
 
-    # pylint: disable=too-many-locals,inconsistent-return-statements
     def _network_precheck(self):
         self.logger.info("starting network pre-checks")
 

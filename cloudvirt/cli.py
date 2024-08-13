@@ -9,7 +9,6 @@ from .mkuser import MkUser
 from . import __version__ as pkg_version
 
 
-# pylint: disable=too-few-public-methods
 class CLI:
     def __init__(self):
         self.logger = None
@@ -109,7 +108,6 @@ class CLI:
         else:
             self.logger.warning("user cancelled action, bailing out.")
 
-    # pylint: disable=too-many-statements
     def _create(self):
         config = ConfigYAML(
             self.args.vmspec_file,
@@ -127,7 +125,7 @@ class CLI:
         self.driver.create(config.vmspec)
 
     # - - main - - #
-    def run(self):  # pylint: disable=inconsistent-return-statements
+    def run(self):
         self._gen_args()
 
         set_root_logger(self.args.debug)
@@ -154,6 +152,5 @@ class CLI:
 
 
 def run():
-    # pylint: disable=invalid-name
     c = CLI()
     c.run()

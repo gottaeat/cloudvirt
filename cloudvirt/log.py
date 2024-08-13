@@ -2,7 +2,7 @@ import logging
 import sys
 
 
-class ANSIColors:  # pylint: disable=too-few-public-methods
+class ANSIColors:
     RES = "\033[0;39m"
 
     LBLK = "\033[0;30m"

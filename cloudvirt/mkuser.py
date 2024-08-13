@@ -6,7 +6,6 @@ import yaml
 from passlib.hash import sha512_crypt
 
 
-# pylint: disable=too-few-public-methods
 class MkUser:
     def __init__(self, parent_logger):
         self.logger = parent_logger.getChild(self.__class__.__name__)
