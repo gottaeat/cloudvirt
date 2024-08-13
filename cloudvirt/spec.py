@@ -20,10 +20,13 @@ class VMSpec:
         self.base_image = None
 
         # misc
-        self.sshpwauth = False
+        self.sshpwauth = None
 
         # UserSpec
         self.users = []
+
+        # cloud-init user-data
+        self.userdata = None
 
 
 # pylint: disable=too-few-public-methods

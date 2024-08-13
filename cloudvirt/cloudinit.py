@@ -43,31 +43,99 @@ class CloudInit:
         self.netconf = yaml.dump(base, sort_keys=False).encode("utf-8")
 
     def _gen_udata(self):
+        # generate user-data
         self.logger.info("generating user-data")
 
-        cloudinit_udata = {}
+        # init dict if no user-data
+        cloudinit_udata = self.vmspec.userdata if self.vmspec.userdata else {}
 
-        if self.vmspec.sshpwauth:
-            cloudinit_udata["ssh_pwauth"] = True
+        # user-data.ssh_pwauth (bool)
+        if self.vmspec.sshpwauth is not None:
+            # check for collission between VMSpec().sshpwauth and
+            # user-data.ssh_pwauth
+            if (
+                "ssh_pwauth" in cloudinit_udata
+                and self.vmspec.sshpwauth != cloudinit_udata["ssh_pwauth"]
+            ):
+                self.logger.error(
+                    'user-data has "ssh_pwauth" set to %s while the vmspec value is %s',
+                    cloudinit_udata["ssh_pwauth"],
+                    self.vmspec.sshpwauth,
+                )
 
-        cloudinit_udata["users"] = []
+            # override
+            cloudinit_udata["ssh_pwauth"] = self.vmspec.sshpwauth
+
+        # user-data.users (list)
+        if "users" not in cloudinit_udata:
+            cloudinit_udata["users"] = []
+
         for userspec in self.vmspec.users:
-            user = {
-                "name": userspec.name,
-                "shell": "/bin/bash",
-                "lock_passwd": False,
-            }
+            # get handle to the matching user in the user-data
+            user_dict = next(
+                (
+                    user
+                    for user in cloudinit_udata["users"]
+                    if user["name"] == userspec.name
+                ),
+                None,
+            )
 
+            # check if a matching user was found, if not, init it with its name
+            if not user_dict:
+                user_dict = {"name": userspec.name}
+                cloudinit_udata["users"].append(user_dict)
+
+            # force replace our defaults
+            user_dict["shell"] = "/bin/bash"  # only shell that matters
+            user_dict["lock_passwd"] = False  # allow console login in all cases
+
+            # sudo
             if userspec.sudo_god_mode:
-                user["groups"] = "sudo"
-                user["sudo"] = "ALL=(ALL) NOPASSWD:ALL"
+                if "groups" in user_dict:
+                    # convert existing groups to list if str
+                    if isinstance(user_dict["groups"], str):
+                        user_dict["groups"] = [user_dict["groups"]]
+                else:
+                    user_dict["groups"] = []
 
-            user["passwd"] = userspec.password_hash
+                # add sudo to groups
+                if "sudo" not in user_dict["groups"]:
+                    user_dict["groups"].append("sudo")
 
+                # convert existing sudo values to list if str
+                if "sudo" in user_dict:
+                    if isinstance(user_dict["sudo"], str):
+                        user_dict["sudo"] = [user_dict["sudo"]]
+                else:
+                    # init if not present
+                    user_dict["sudo"] = []
+
+                # enable god mode
+                user_dict["sudo"] = list(
+                    set(user_dict["sudo"] + ["ALL=(ALL) NOPASSWD:ALL"])
+                )
+
+            # force userspec provided pass
+            user_dict["passwd"] = userspec.password_hash
+
+            # append ssh keys
             if userspec.ssh_keys:
-                user["ssh_authorized_keys"] = userspec.ssh_keys
+                if "ssh_authorized_keys" in user_dict:
+                    if isinstance(user_dict["ssh_authorized_keys"], str):
+                        user_dict["ssh_authorized_keys"] = [
+                            user_dict["ssh_authorized_keys"]
+                        ]
+                else:
+                    user_dict["ssh_authorized_keys"] = []
 
-            cloudinit_udata["users"].append(user)
+                for key in userspec.ssh_keys:
+                    user_dict["ssh_authorized_keys"] = list(
+                        dict.fromkeys(user_dict["ssh_authorized_keys"] + [key])
+                    )
+
+        if not cloudinit_udata["users"]:
+            self.logger.error("resulting user-data contains no users")
 
         cloud_udata = yaml.dump(
             cloudinit_udata,
