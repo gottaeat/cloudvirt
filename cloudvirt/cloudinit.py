@@ -27,7 +27,7 @@ class CloudInit:
         network["ethernets"]["id0"] = {}
         network["ethernets"]["id0"]["match"] = {"macaddress": self.vmspec.mac_addr}
         network["ethernets"]["id0"]["addresses"] = [
-            f"{self.vmspec.ip}/{self.vmspec.bridge_subnet}"
+            f"{self.vmspec.ip}/{self.vmspec.bridge_pfxlen}"
         ]
         network["ethernets"]["id0"]["nameservers"] = {
             "addresses": ["1.1.1.1", "1.0.0.1"]

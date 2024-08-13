@@ -11,7 +11,7 @@ class VMSpec:
         self.mac_addr = None
         self.ip = None
         self.gateway = None
-        self.bridge_subnet = None
+        self.bridge_pfxlen = None
 
         # storage
         self.vol_pool = None

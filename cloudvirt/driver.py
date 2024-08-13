@@ -179,7 +179,7 @@ class APIDriverVMCreator:
             if self.vmspec.gateway is None:
                 self.logger.error("driver cannot derive the gateway")
 
-            if self.vmspec.bridge_subnet is None:
+            if self.vmspec.bridge_pfxlen is None:
                 self.logger.error("ip needs to be in CIDR notation")
 
             return needs_net_update
@@ -218,7 +218,7 @@ class APIDriverVMCreator:
             )
 
             self.vmspec.gateway = self.vmspec.gateway or net_ip["address"]
-            self.vmspec.bridge_subnet = net_net.prefixlen
+            self.vmspec.bridge_pfxlen = net_net.prefixlen
 
             if ipaddress.ip_address(self.vmspec.ip) not in ipaddress.ip_network(
                 net_net

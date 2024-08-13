@@ -116,7 +116,7 @@ class ConfigYAML:
             self.vmspec.ip = ip_parts[0]
 
             if len(ip_parts) == 2:
-                self.vmspec.bridge_subnet = ip_parts[1]
+                self.vmspec.bridge_pfxlen = ip_parts[1]
 
         # vmspec.sshpwauth
         try:
