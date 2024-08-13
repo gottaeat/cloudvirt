@@ -3,22 +3,18 @@ import os
 
 import yaml
 
-from .spec import VMSpec
-from .spec import UserSpec
+from .spec import VMSpec, UserSpec
 
 
 # pylint: disable=too-few-public-methods
 class ConfigYAML:
-    def __init__(self, vmspec_file, userspec_file, parent_logger):
+    def __init__(self, vmspec_file, userspec_file, userdata_file, parent_logger):
         self.vmspec_file = vmspec_file
         self.userspec_file = userspec_file
+        self.userdata_file = userdata_file
         self.logger = parent_logger.getChild(self.__class__.__name__)
 
         self.vmspec = None
-
-    def parse_yaml(self):
-        self._parse_vmspec()
-        self._parse_userspec()
 
     # pylint: disable=too-many-branches,too-many-statements
     def _parse_vmspec(self):
@@ -143,9 +139,11 @@ class ConfigYAML:
         except KeyError:
             pass
 
-    # pylint: disable=too-many-branches,too-many-statements
     def _parse_userspec(self):
         # - - load yaml - - #
+        if not self.userspec_file:
+            return self.logger.info("no userspec configuration was provided")
+
         self.logger.info("loading UserSpec() yaml")
 
         if os.path.isfile(self.userspec_file):
@@ -221,3 +219,29 @@ class ConfigYAML:
                 pass
 
             self.vmspec.users.append(userspec)
+
+    def _parse_userdata(self):
+        # - - load yaml - - #
+        if not self.userdata_file:
+            return self.logger.info("no arbitrary user-data was provided")
+
+        self.logger.info("loading UserSpec() yaml")
+
+        if os.path.isfile(self.userdata_file):
+            try:
+                with open(self.userdata_file, "r", encoding="utf-8") as yaml_file:
+                    yaml_parsed = yaml.load(yaml_file.read(), Loader=yaml.Loader)
+            # pylint: disable=bare-except
+            except:
+                self.logger.exception("%s parsing has failed", self.userdata_file)
+        else:
+            self.logger.error("%s is not a file", self.userdata_file)
+
+        self.vmspec.userdata = (
+            yaml_parsed  # pylint: disable=possibly-used-before-assignment
+        )
+
+    def run(self):
+        self._parse_vmspec()
+        self._parse_userspec()
+        self._parse_userdata()
