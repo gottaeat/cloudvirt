@@ -21,21 +21,19 @@ class CLI:
 
     # - - parsing - - #
     def _mkuser_args(self):
-        mkuser_subparser_desc = "Create a UserSpec YAML!"
-        mkuser_subparser_help = "Create a UserSpec YAML!"
+        mkuser_subparser_desc = "create a UserSpec yaml to be consumed by --userspec"
 
         self.subparsers.add_parser(
-            "mkuser", help=mkuser_subparser_help, description=mkuser_subparser_desc
+            "mkuser", help=mkuser_subparser_desc, description=mkuser_subparser_desc
         )
 
     def _nuke_args(self):
-        nuke_subparser_desc = "Nuke a VM!"
-        nuke_subparser_help = "Nuke a VM!"
-        nuke_subparser_name_help = "Name of the domain to be nuked."
-        nuke_subparser_noconfirm_help = "Skip the confirmation prompt."
+        nuke_subparser_desc = "nuke a vm"
+        nuke_subparser_name_help = "name of the domain to be nuked"
+        nuke_subparser_noconfirm_help = "skip the confirmation dialogue"
 
         nuke_subparser = self.subparsers.add_parser(
-            "nuke", help=nuke_subparser_help, description=nuke_subparser_desc
+            "nuke", help=nuke_subparser_desc, description=nuke_subparser_desc
         )
         nuke_subparser.add_argument("name", type=str, help=nuke_subparser_name_help)
         nuke_subparser.add_argument(
@@ -46,26 +44,31 @@ class CLI:
         )
 
     def _create_args(self):
-        create_subparser_desc = "Create a VM!"
-        create_subparser_help = "Create a VM!"
-        create_subparser_vmspec_help = "VM specification YAML file."
-        create_subparser_userspec_help = "User(s) specification YAML file."
+        create_subparser_desc = "create a vm"
+        create_subparser_vmspec_help = "yaml file holding the vm config"
+        create_subparser_userspec_help = "yaml file holding the user config"
+        create_subparser_userdata_help = "cloud-init user-data file"
 
         create_subparser = self.subparsers.add_parser(
-            "create", help=create_subparser_help, description=create_subparser_desc
+            "create", help=create_subparser_desc, description=create_subparser_desc
         )
 
         create_subparser.add_argument(
-            "--vmspec",
-            dest="vmspec_file",
-            required=True,
+            "vmspec_file",
             help=create_subparser_vmspec_help,
         )
 
         create_subparser.add_argument(
-            "--userspec",
+            "--userdata",
+            dest="userdata_file",
+            required=False,
+            help=create_subparser_userdata_help,
+        )
+
+        create_subparser.add_argument(
+            "--users",
             dest="userspec_file",
-            required=True,
+            required=False,
             help=create_subparser_userspec_help,
         )
 
@@ -108,8 +111,18 @@ class CLI:
 
     # pylint: disable=too-many-statements
     def _create(self):
-        config = ConfigYAML(self.args.vmspec_file, self.args.userspec_file, self.logger)
-        config.parse_yaml()
+        config = ConfigYAML(
+            self.args.vmspec_file,
+            self.args.userspec_file,
+            self.args.userdata_file,
+            self.logger,
+        )
+        config.run()
+
+        if not self.args.userspec_file and not self.args.userdata_file:
+            err_msg = "no users or user-data file was provided, bailing out as "
+            err_msg += "you may be unable to log in to an VMs created"
+            self.logger.error(err_msg)
 
         self.driver.create(config.vmspec)
 
