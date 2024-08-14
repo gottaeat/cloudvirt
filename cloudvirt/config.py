@@ -164,7 +164,7 @@ class ConfigYAML:
         except KeyError:
             self.logger.exception("userspec section in the YAML file is missing")
 
-        userspec_must_have = ["name", "password_hash"]
+        userspec_must_have = ["name"]
 
         for user in userspec_yaml:
             for item in userspec_must_have:
@@ -182,7 +182,15 @@ class ConfigYAML:
             userspec.name = str(user["name"])
 
             # userspec.password_hash
-            userspec.password_hash = str(user["password_hash"])
+            try:
+                if user["password_hash"] is None:
+                    self.logger.error(
+                        "password_hash cannot be specified then left blank"
+                    )
+
+                userspec.password_hash = str(user["password_hash"])
+            except KeyError:
+                pass
 
             # userspec.ssh_keys
             try:
@@ -213,6 +221,24 @@ class ConfigYAML:
                 userspec.sudo_god_mode = user["sudo_god_mode"]
             except KeyError:
                 pass
+
+            if not userspec.ssh_keys and not self.userdata_file:
+                # no way of authing is possible
+                if not userspec.password_hash:
+                    err_msg = "no ssh keys, a password hash, or a user-data "
+                    err_msg += "file that may contain them for the user "
+                    err_msg += f"{userspec.name} is present, bailing out"
+                    self.logger.error(err_msg)
+                else:
+                    # passwd is only auth but no sshpwauth
+                    if not self.vmspec.sshpwauth:
+                        err_msg = "passwd is the only auth mechanism possible "
+                        err_msg += f"for user {userspec.name} but sshpwauth in "
+                        err_msg += f"vmspec is set to {self.vmspec.sshpwauth} "
+                        err_msg += "and no user-data file that may contain the "
+                        err_msg += "key with the value set to True was "
+                        err_msg += "provided, bailing out"
+                        self.logger.error(err_msg)
 
             self.vmspec.users.append(userspec)
 
