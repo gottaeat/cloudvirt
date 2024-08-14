@@ -1,0 +1,29 @@
+name: Pylint and unittest
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libvirt0 libvirt-dev
+        python -m pip install --upgrade pip
+        pip install pylint
+        pip install .
+    - name: Analysing the code with pylint
+      run: |
+        pylint ./cloudvirt
+    - name: Running unittest
+      run: |
+        python -m unittest
