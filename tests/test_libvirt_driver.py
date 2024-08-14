@@ -182,6 +182,7 @@ class NukeVM(unittest.TestCase):
         vmspec.base_image = "test.img"
         vmspec.vol_name = f"{vmspec.dom_name}-vol.qcow2"
         vmspec.ip = "192.168.254.129"
+        vmspec.sshpwauth = True
 
         testuser = UserSpec()
         testuser.name = "mytestname"
@@ -198,6 +199,7 @@ class NukeVM(unittest.TestCase):
 
         vmspec = VMSpec()
         vmspec.dom_name = "nonexistant_dom"
+        vmspec.sshpwauth = True
 
         testuser = UserSpec()
         testuser.name = "mytestname"
@@ -234,6 +236,7 @@ class CreateVM(unittest.TestCase):
         vmspec.base_image = "test.img"
         vmspec.vol_name = f"{vmspec.dom_name}-vol.qcow2"
         vmspec.ip = "192.168.254.129"
+        vmspec.sshpwauth = True
 
         testuser = UserSpec()
         testuser.name = "mytestname"
@@ -258,6 +261,7 @@ class CreateVM(unittest.TestCase):
         vmspec.base_image = "test.img"
         vmspec.vol_name = f"{vmspec.dom_name}-vol.qcow2"
         vmspec.ip = "192.168.254.129"
+        vmspec.sshpwauth = True
 
         testuser = UserSpec()
         testuser.name = "mytestname"

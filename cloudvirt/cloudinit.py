@@ -116,7 +116,8 @@ class CloudInit:
                 )
 
             # force userspec provided pass
-            user_dict["passwd"] = userspec.password_hash
+            if userspec.password_hash:
+                user_dict["passwd"] = userspec.password_hash
 
             # append ssh keys
             if userspec.ssh_keys:
@@ -132,6 +133,34 @@ class CloudInit:
                     user_dict["ssh_authorized_keys"] = list(
                         dict.fromkeys(user_dict["ssh_authorized_keys"] + [key])
                     )
+
+            if "ssh_authorized_keys" in user_dict:
+                # remove empty items from list
+                user_dict["ssh_authorized_keys"] = [
+                    x for x in user_dict["ssh_authorized_keys"] if x != ""
+                ]
+
+                # check if anything remains
+                if not user_dict["ssh_authorized_keys"]:
+                    self.logger.error(
+                        "resulting ssh_authorized_keys for %s does not contain any keys",
+                        user_dict["name"],
+                    )
+            else:
+                # no passwd, no ssh keys == no auth
+                if "passwd" not in user_dict:
+                    self.logger.error(
+                        "user %s does not have a passwd or a ssh key", user_dict["name"]
+                    )
+                else:
+                    if (
+                        "ssh_pwauth" not in cloudinit_udata
+                        or not cloudinit_udata["ssh_pwauth"]
+                    ):
+                        err_msg = f"user {user_dict['name']} only has passwd "
+                        err_msg += "for auth but the ssh_pwauth is not defined "
+                        err_msg += "or set to false"
+                        self.logger.error(err_msg)
 
         if not cloudinit_udata["users"]:
             self.logger.error("resulting user-data contains no users")
