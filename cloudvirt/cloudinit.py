@@ -1,13 +1,15 @@
 import io
+import logging
 
 import pycdlib
 import yaml
 
 
 class CloudInit:
-    def __init__(self, vmspec, parent_logger):
+    def __init__(self, vmspec):
         self.vmspec = vmspec
-        self.logger = parent_logger.getChild(self.__class__.__name__)
+
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self.udata = None
         self.mdata = None
