@@ -33,9 +33,8 @@ class CreateCloudInit(unittest.TestCase):
         vmspec.users.append(testuser)
 
         cloudinit = CloudInit(vmspec)
-
-        cloud_udata = cloudinit._gen_udata()
-        cloud_mdata = cloudinit._gen_mdata()
+        cloudinit._gen_udata()  # pylint: disable=protected-access
+        cloudinit._gen_mdata()  # pylint: disable=protected-access
 
         udata_parsed = yaml.safe_load(cloudinit.udata)
         mdata_parsed = yaml.safe_load(cloudinit.mdata)
@@ -88,7 +87,7 @@ class CreateCloudInit(unittest.TestCase):
 
         cloudinit = CloudInit(vmspec)
 
-        cloud_netplan = cloudinit._gen_netconf()
+        cloudinit._gen_netconf()  # pylint: disable=protected-access
         ndata_parsed = yaml.safe_load(cloudinit.netconf)["network"]
 
         self.assertEqual(2, ndata_parsed["version"])

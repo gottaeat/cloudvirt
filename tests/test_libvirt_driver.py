@@ -46,14 +46,14 @@ class MockDirStoragePool:
         """
         return xml
 
-    def createXML(self, xml, weird_number):
+    def createXML(self, xml, weird_number):  # pylint: disable=unused-argument
         if weird_number != 0:
             raise ValueError("what the fuck weird number did you pass?")
 
     def refresh(self):
         return 0
 
-    def storageVolLookupByName(self, name):
+    def storageVolLookupByName(self, name):  # pylint: disable=unused-argument
         return MockStorageVol()
 
 
@@ -86,11 +86,13 @@ class MockNetwork:
 
         return xml
 
-    def DHCPLeases(self, mac=None, flags=0):
+    def DHCPLeases(self, mac=None, flags=0):  # pylint: disable=unused-argument
         return []
 
-    def update(self, command, section, parentIndex, xml, flags=0):
+    # fmt: off
+    def update(self, command, section, parentIndex, xml, flags=0): # pylint: disable=unused-argument
         return None
+    # fmt: on
 
 
 class MockDom:
@@ -107,7 +109,7 @@ class MockDom:
         domxml_path = get_testfile("realdom.xml")
 
         domxml = None
-        with open(domxml_path, "r") as f:
+        with open(domxml_path, "r", encoding="utf-8") as f:
             domxml = f.read()
 
         return domxml
@@ -119,7 +121,8 @@ class MockDom:
     def interfaceAddresses(self, src):
         if src == libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
             return {}
-        elif src == libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP:
+
+        if src == libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP:
             return {
                 "vnet0": {
                     "addrs": [{"addr": "192.168.254.131", "prefix": 0, "type": 0}],
@@ -143,7 +146,7 @@ class MockDriver:
     def networkLookupByName(self, name):
         return MockNetwork(name)
 
-    def storagePoolLookupByName(self, name):
+    def storagePoolLookupByName(self, name):  # pylint: disable=unused-argument
         return MockDirStoragePool("test_pool", self.pool_path)
 
     def defineXML(self, xml):
@@ -158,8 +161,8 @@ class MockDriver:
 
         if name in self._known_doms:
             return self._known_doms[name]
-        else:
-            raise libvirt.libvirtError("Nothing found baybe!!")
+
+        raise libvirt.libvirtError("Nothing found baybe!!")
 
 
 class NukeVM(unittest.TestCase):
@@ -212,7 +215,9 @@ class NukeVM(unittest.TestCase):
 
 class CreateVM(unittest.TestCase):
     def setUp(self):
-        self.vol_dir = tempfile.TemporaryDirectory()
+        self.vol_dir = (
+            tempfile.TemporaryDirectory()  # pylint: disable=consider-using-with
+        )
 
     def tearDown(self):
         self.vol_dir.cleanup()
