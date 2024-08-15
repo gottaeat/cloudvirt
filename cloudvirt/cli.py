@@ -117,7 +117,6 @@ class CLI:
             self.args.vmspec_file,
             self.args.userspec_file,
             self.args.userdata_file,
-            self.logger,
         )
         config.run()
 
@@ -133,17 +132,17 @@ class CLI:
         self._gen_args()
 
         set_root_logger(self.args.debug)
-        self.logger = logging.getLogger("cloudvirt")
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self.logger.info("started cloudvirt ver. %s", pkg_version)
 
         # - - mkuser - - #
         if self.args.command == "mkuser":
-            mku = MkUser(self.logger)
+            mku = MkUser()
             return mku.run()
 
         # - - driver action - - #
-        self.driver = APIDriver(self.logger)
+        self.driver = APIDriver()
         self.driver.connect()
 
         if self.args.command == "create":
