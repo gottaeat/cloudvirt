@@ -1,4 +1,5 @@
 import ipaddress
+import logging
 import os
 
 import yaml
@@ -7,11 +8,12 @@ from .spec import VMSpec, UserSpec
 
 
 class ConfigYAML:
-    def __init__(self, vmspec_file, userspec_file, userdata_file, parent_logger):
+    def __init__(self, vmspec_file, userspec_file, userdata_file):
         self.vmspec_file = vmspec_file
         self.userspec_file = userspec_file
         self.userdata_file = userdata_file
-        self.logger = parent_logger.getChild(self.__class__.__name__)
+
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self.vmspec = None
 

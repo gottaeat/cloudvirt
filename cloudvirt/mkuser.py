@@ -1,3 +1,4 @@
+import logging
 import time
 
 import yaml
@@ -8,8 +9,8 @@ from .util import ask_q
 
 
 class MkUser:
-    def __init__(self, parent_logger):
-        self.logger = parent_logger.getChild(self.__class__.__name__)
+    def __init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self.userspec_yaml_dict = {"userspec": []}
         self.user_names = []

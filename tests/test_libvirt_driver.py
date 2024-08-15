@@ -1,4 +1,3 @@
-import logging
 import os
 import tempfile
 import unittest
@@ -8,11 +7,7 @@ import libvirt
 
 from cloudvirt.driver import APIDriverVMCreator
 from cloudvirt.driver import APIDriverVMNuker
-from cloudvirt.log import set_root_logger
 from cloudvirt.spec import VMSpec, UserSpec
-
-set_root_logger(debug=True)
-mock_logger = logging.getLogger("cloudvirt")
 
 
 def get_testfile(name):
@@ -140,9 +135,8 @@ class MockDom:
 
 
 class MockDriver:
-    def __init__(self, pool_path, parent_logger):
+    def __init__(self, pool_path):
         self.pool_path = pool_path
-        self.logger = parent_logger.getChild(self.__class__.__name__)
 
         self._known_doms = {"test_nuke_dom": MockDom()}
 
@@ -170,7 +164,7 @@ class MockDriver:
 
 class NukeVM(unittest.TestCase):
     def test_nukevm(self):
-        driver = MockDriver(None, mock_logger)
+        driver = MockDriver(None)
 
         vmspec = VMSpec()
         vmspec.dom_name = "test_nuke_dom"
@@ -191,11 +185,11 @@ class NukeVM(unittest.TestCase):
         )
         vmspec.users.append(testuser)
 
-        c = APIDriverVMNuker(driver, vmspec.dom_name, driver.logger)
+        c = APIDriverVMNuker(driver, vmspec.dom_name)
         c.nuke()
 
     def test_nonexistant_dom_name(self):
-        driver = MockDriver(None, mock_logger)
+        driver = MockDriver(None)
 
         vmspec = VMSpec()
         vmspec.dom_name = "nonexistant_dom"
@@ -208,7 +202,7 @@ class NukeVM(unittest.TestCase):
         )
         vmspec.users.append(testuser)
 
-        c = APIDriverVMNuker(driver, vmspec.dom_name, driver.logger)
+        c = APIDriverVMNuker(driver, vmspec.dom_name)
 
         # normally would catch libvirt.libvirtError but our logger exits with 1
         # when exception/error is called, so catch that.
@@ -224,7 +218,7 @@ class CreateVM(unittest.TestCase):
         self.vol_dir.cleanup()
 
     def test_createvm(self):
-        driver = MockDriver(self.vol_dir.name, mock_logger)
+        driver = MockDriver(self.vol_dir.name)
 
         vmspec = VMSpec()
         vmspec.dom_name = "test_dom"
@@ -245,11 +239,11 @@ class CreateVM(unittest.TestCase):
         )
         vmspec.users.append(testuser)
 
-        c = APIDriverVMCreator(driver, vmspec, driver.logger)
+        c = APIDriverVMCreator(driver, vmspec)
         c.create()
 
     def test_existing_dom_name(self):
-        driver = MockDriver(self.vol_dir.name, mock_logger)
+        driver = MockDriver(self.vol_dir.name)
 
         vmspec = VMSpec()
         vmspec.dom_name = "existing_dom"
@@ -270,7 +264,7 @@ class CreateVM(unittest.TestCase):
         )
         vmspec.users.append(testuser)
 
-        c = APIDriverVMCreator(driver, vmspec, driver.logger)
+        c = APIDriverVMCreator(driver, vmspec)
 
         with self.assertRaises(libvirt.libvirtError):
             c.create()

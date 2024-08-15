@@ -1,5 +1,6 @@
 import grp
 import ipaddress
+import logging
 import os
 import pwd
 import random
@@ -13,10 +14,11 @@ from .cloudinit import CloudInit
 
 
 class APIDriverVMNuker:
-    def __init__(self, driver, dom_name, parent_logger):
+    def __init__(self, driver, dom_name):
         self.driver = driver
         self.dom_name = dom_name
-        self.logger = parent_logger.getChild(self.__class__.__name__)
+
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self._dom = None
         self._domxml_root = None
@@ -119,10 +121,11 @@ class APIDriverVMNuker:
 
 
 class APIDriverVMCreator:
-    def __init__(self, driver, vmspec, parent_logger):
+    def __init__(self, driver, vmspec):
         self.driver = driver
         self.vmspec = vmspec
-        self.logger = parent_logger.getChild(self.__class__.__name__)
+
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self._pool_path = None
         self._pool = None
@@ -149,7 +152,7 @@ class APIDriverVMCreator:
         except libvirt.libvirtError:
             pass
         else:
-            self.logger.error(f"{self.vmspec.dom_name} already exists")
+            self.logger.error("domain %s already exists", self.vmspec.dom_name)
 
     def _network_precheck(self):
         self.logger.info("starting network pre-checks")
@@ -249,7 +252,7 @@ class APIDriverVMCreator:
     def _gen_cloudinit_iso(self):
         self._cloudinit_iso = f"{self.vmspec.dom_name}-cloudinit.iso"
 
-        clinit = CloudInit(self.vmspec, self.logger)
+        clinit = CloudInit(self.vmspec)
         clinit.iso_path = f"{self._pool_path}/{self._cloudinit_iso}"
         clinit.mkiso()
 
@@ -434,9 +437,10 @@ class APIDriverVMCreator:
 
 
 class APIDriver:
-    def __init__(self, parent_logger, url="qemu:///system"):
+    def __init__(self, url="qemu:///system"):
         self.url = url
-        self.logger = parent_logger.getChild(self.__class__.__name__)
+
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self.conn = None
         self._libvirt_gid = None
@@ -486,11 +490,11 @@ class APIDriver:
         self._libvirt_gid = libvirt_gid
 
     def nuke(self, dom_name):
-        nuker = APIDriverVMNuker(self, dom_name, self.logger)
+        nuker = APIDriverVMNuker(self, dom_name)
         nuker.nuke()
 
     def create(self, vmspec):
-        creator = APIDriverVMCreator(self, vmspec, self.logger)
+        creator = APIDriverVMCreator(self, vmspec)
         creator.create()
 
     @staticmethod
