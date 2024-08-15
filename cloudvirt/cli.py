@@ -5,6 +5,7 @@ from .config import ConfigYAML
 from .driver import APIDriver
 from .log import set_root_logger
 from .mkuser import MkUser
+from .util import ask_q
 
 from . import __version__ as pkg_version
 
@@ -91,8 +92,11 @@ class CLI:
             want_nuke = True
         else:
             while True:
-                self.logger.info("do you want %s nuked? (y/n): ", self.args.name)
-                consent = str(input().lower().strip(" "))
+                consent = (
+                    ask_q(f"do you want {self.args.name} nuked? (y/n)")
+                    .lower()
+                    .strip(" ")
+                )
 
                 want_nuke = (
                     True if consent == "y" else False if consent == "n" else None
