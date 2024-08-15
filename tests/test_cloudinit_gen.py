@@ -1,4 +1,3 @@
-import logging
 import unittest
 
 import yaml
@@ -6,10 +5,6 @@ import yaml
 from cloudvirt.spec import UserSpec
 from cloudvirt.spec import VMSpec
 from cloudvirt.cloudinit import CloudInit
-from cloudvirt.log import set_root_logger
-
-set_root_logger(debug=True)
-mock_logger = logging.getLogger("cloudvirt")
 
 
 class CreateCloudInit(unittest.TestCase):
@@ -37,7 +32,7 @@ class CreateCloudInit(unittest.TestCase):
 
         vmspec.users.append(testuser)
 
-        cloudinit = CloudInit(vmspec, mock_logger)
+        cloudinit = CloudInit(vmspec)
 
         cloud_udata = cloudinit._gen_udata()
         cloud_mdata = cloudinit._gen_mdata()
@@ -91,8 +86,7 @@ class CreateCloudInit(unittest.TestCase):
 
         vmspec.users.append(testuser)
 
-        cloudinit = CloudInit(vmspec, mock_logger)
-        cloudinit.logger = mock_logger
+        cloudinit = CloudInit(vmspec)
 
         cloud_netplan = cloudinit._gen_netconf()
         ndata_parsed = yaml.safe_load(cloudinit.netconf)["network"]
