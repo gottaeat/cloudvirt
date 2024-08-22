@@ -1,6 +1,0 @@
-<pool type="dir">
-    <name>cloudvirt</name>
-     <target>
-         <path>/pools/cloudvirt</path>
-     </target>
-</pool>
