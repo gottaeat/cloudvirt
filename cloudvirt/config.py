@@ -30,6 +30,8 @@ class ConfigYAML:
         else:
             self.logger.error("%s is not a file", self.vmspec_file)
 
+        self.logger.debug("VMSpec YAML: %s", yaml_parsed) # pylint: disable=possibly-used-before-assignment
+
         # - - parse yaml - - #
         self.logger.info("parsing VMSpec() yaml")
 
@@ -137,6 +139,17 @@ class ConfigYAML:
             self.vmspec.gateway = vmspec_yaml["gateway"]
         except KeyError:
             pass
+
+        try:
+            if vmspec_yaml["isolated_port"] is None:
+                self.logger.error("isolated_port cannot be specified then left blank")
+
+            if type(vmspec_yaml["isolated_port"]).__name__ != "bool":
+                self.logger.error("isolated port should be a bool.")
+
+            self.vmspec.isolated_port = vmspec_yaml["isolated_port"]
+        except KeyError:
+            self.logger.debug("isolated_port not set")
 
     def _parse_userspec(self):
         # - - load yaml - - #

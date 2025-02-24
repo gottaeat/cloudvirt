@@ -17,18 +17,19 @@ pip install .
 ## configuration
 ### specification
 #### domains
-| key        | necessity | description                                                                              |
-| ---------- | --------- | ---------------------------------------------------------------------------------------- |
-| dom_name   | required  | `str` name of the domain                                                                 |
-| dom_mem    | required  | `int` amount of memory in megabytes                                                      |
-| dom_vcpu   | required  | `int` core count                                                                         |
-| net        | required  | `str` name of the libVirt network to associate with the VM                               |
-| vol_pool   | required  | `str` name of the libVirt pool to associate with the VM                                  |
-| vol_size   | required  | `int` disk size in gigabytes                                                             |
-| base_image | optional  | `str` full name of the `cloud-init` capable cloud image[1]                               |
-| ip         | check[2]  | `ipv4` ipv4 address or network to be associated with the primary interface of the VM     |
-| sshpwauth  | optional  | `bool` whether to allow ssh authentication via passwords (VM-wide, applies to all users) |
-| gateway    | check[3]  | `ipv4` the next hop to the default route                                                 |
+| key            | necessity | description                                                                              |
+| -------------- | --------- | ---------------------------------------------------------------------------------------- |
+| dom_name       | required  | `str` name of the domain                                                                 |
+| dom_mem        | required  | `int` amount of memory in megabytes                                                      |
+| dom_vcpu       | required  | `int` core count                                                                         |
+| net            | required  | `str` name of the libVirt network to associate with the VM                               |
+| isolated_port  | optional  | `bool` whether port is isolated. If unset, relevant config not emitted.                  |
+| vol_pool       | required  | `str` name of the libVirt pool to associate with the VM                                  |
+| vol_size       | required  | `int` disk size in gigabytes                                                             |
+| base_image     | optional  | `str` full name of the `cloud-init` capable cloud image[1]                               |
+| ip             | check[2]  | `ipv4` ipv4 address or network to be associated with the primary interface of the VM     |
+| sshpwauth      | optional  | `bool` whether to allow ssh authentication via passwords (VM-wide, applies to all users) |
+| gateway        | check[3]  | `ipv4` the next hop to the default route                                                 |
 
 __[1]__ the cloud image specified must be present in the specified volume pool
 and be reachable by libVirt before cloudvirt is executed. if none provided,
@@ -89,6 +90,7 @@ vmspec:
     dom_mem: 2048
     dom_vcpu: 2
     net: cloudvirt
+#   isolated_port: no
 #   ip:
 #   gateway:
     vol_pool: cloudvirt
