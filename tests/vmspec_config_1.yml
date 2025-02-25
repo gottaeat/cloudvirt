@@ -1,0 +1,13 @@
+---
+vmspec:
+    dom_name: test_dom
+    dom_mem: 1512
+    dom_vcpu: 2
+    net: test_net
+    ip: 1.1.1.1
+    gateway: 2.2.2.2
+    vol_pool: test_vol
+    vol_size: 10
+    base_image: base-img.iso
+    isolated_port: no
+    sshpwauth: no

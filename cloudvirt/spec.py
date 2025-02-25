@@ -11,6 +11,7 @@ class VMSpec:
         self.ip = None
         self.gateway = None
         self.bridge_pfxlen = None
+        self.isolated_port = None
 
         # storage
         self.vol_pool = None

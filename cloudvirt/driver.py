@@ -346,9 +346,17 @@ class APIDriverVMCreator:
         ET.SubElement(domxml_dev_iface, "mac", {"address": self.vmspec.mac_addr})
         ET.SubElement(domxml_dev_iface, "model", {"type": "virtio"})
 
+        if self.vmspec.isolated_port is not None:
+            isolated_opt = "no"
+            if self.vmspec.isolated_port is True:
+                isolated_opt = "yes"
+            ET.SubElement(domxml_dev_iface, "port", {"isolated": isolated_opt})
+
         ET.SubElement(domxml_dev, "serial", {"type": "pty"})
 
         domxml = ET.tostring(domxml_root, encoding="unicode")
+
+        self.logger.debug("DOM XML: %s", domxml)
 
         self.driver.defineXML(domxml)
 
@@ -494,6 +502,7 @@ class APIDriver:
         nuker.nuke()
 
     def create(self, vmspec):
+        self.logger.debug("Creating with VMspec %s", vmspec.__dict__)
         creator = APIDriverVMCreator(self, vmspec)
         creator.create()
 
