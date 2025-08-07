@@ -86,6 +86,7 @@ class APIDriverVMNuker:
         network_type = netxml_root.find("forward")
         if "mode" not in network_type.attrib or network_type.attrib["mode"] not in [
             "route",
+            "open",
             "nat",
         ]:
             return
@@ -172,6 +173,7 @@ class APIDriverVMCreator:
 
         if "mode" not in network_type.attrib or network_type.attrib["mode"] not in [
             "route",
+            "open",
             "nat",
         ]:
             self.logger.info("prechecks are not used for the route and nat modes")
